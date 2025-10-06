@@ -72,6 +72,42 @@ app.post('/logout', (c) => {
     setCookie(c, 'token', '', { maxAge: -1 });
     return c.json({ success: true, message: 'Logout berhasil' });
 });
+
+//tambahkan todos
+import { users as schemaUsers, todos } from './db/schema.js';
+ 
+// API Menambah Todo
+app.post('/api/todos', async (c) => {
+  const token = getCookie(c, 'token');
+    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401);
+    try {
+        const user = jwt.verify(token, process.env.JWT_SECRET);
+         const { note } = await c.req.json();
+    const newTodo = await db.insert(todos)
+        .values({ note, userId: user.id })
+        .returning();
+    return c.json({ success: true, data: newTodo[0] }, 201);
+    } catch (error) {
+        return c.json({ success: false, message: 'Unauthorized' }, 401);
+    }
+});
+
+// ... di dalam `const api = new Hono();`
+ 
+// API Melihat Semua Todo milik User
+app.get('api/todos', async (c) => {
+  const token = getCookie(c, 'token');
+    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401);
+    try {
+        const user = jwt.verify(token, process.env.JWT_SECRET);
+        const userTodos = await db.query.todos.findMany({
+        where: (todos, { eq }) => eq(todos.userId, user.id)
+    });
+    return c.json({ success: true, data: userTodos });
+    } catch (error) {
+        return c.json({ success: false, message: 'Unauthorized' }, 401);
+    }
+});
  
 // ... (kode serve)
  
