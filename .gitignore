@@ -1,0 +1,7 @@
+node_modules
+
+git add .
+git commit -m 'init project'
+git remote add origin https://github.com/aliffauzan01/my-todos.git
+git branch -M main
+git push -u origin main
