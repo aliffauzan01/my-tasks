@@ -5,14 +5,28 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:generate": "drizzle-kit generate:pg",
+    "db:migrate": "node -r dotenv/config migrate.js",
+    "db:seed": "node -r dotenv/config seed.js",
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@hono/node-server": "^1.19.5",
+    "bcryptjs": "^3.0.2",
+    "cookie": "^1.0.2",
     "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.44.6",
+    "hono": "^4.9.10",
     "i": "^0.3.7",
-    "npm": "^11.6.1"
+    "jsonwebtoken": "^9.0.2",
+    "npm": "^11.6.1",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.5"
   }
 }
