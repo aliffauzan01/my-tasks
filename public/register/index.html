@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registrasi</title>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Registrasi Akun Baru</h1>
+      <div id="message"></div>
+      <form id="registrationForm">
+        <input type="text" id="username" placeholder="Username" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button type="submit">Daftar</button>
+      </form>
+      <p>Sudah punya akun? <a href="/login/">Login di sini</a></p>
+    </div>
+
+    <script>
+      const form = document.getElementById("registrationForm");
+      const messageDiv = document.getElementById("message");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        messageDiv.textContent = "";
+        messageDiv.style.color = "red";
+
+        try {
+          const response = await fetch("/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            messageDiv.style.color = "green";
+            messageDiv.innerHTML =
+              'Registrasi berhasil! Silakan <a href="/login/">login</a>.';
+            form.reset();
+          } else {
+            messageDiv.textContent = result.message || "Registrasi gagal!";
+          }
+        } catch (error) {
+          messageDiv.textContent = "Terjadi kesalahan. Silakan coba lagi.";
+        }
+      });
+    </script>
+  </body>
+</html>
