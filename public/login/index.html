@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
- 
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login</title>
 </head>
- 
+
 <body>
   <div class="container">
     <h1>Login</h1>
@@ -18,35 +18,36 @@
     </form>
     <p>Belum punya akun? <a href="/register/">Daftar di sini</a></p>
   </div>
- 
+
   <script>
     const form = document.getElementById('loginForm');
     const messageDiv = document.getElementById('message');
- 
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
       messageDiv.textContent = '';
- 
+
       try {
         const response = await fetch('/api/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password }),
         });
- 
+
         const result = await response.json();
- 
+
         if (result.success) {
           window.location.href = '/todos/';
         } else {
           messageDiv.textContent = result.message || 'Login gagal!';
         }
       } catch (error) {
-        messageDiv.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+        messageDiv.textContent = 'Terjadi kesalahan. Silakan coba lagi. '+ error;
       }
     });
   </script>
 </body>
+
 </html>

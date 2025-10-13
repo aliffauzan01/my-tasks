@@ -2,8 +2,10 @@
 import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
 import 'dotenv/config';
+import { serveStatic } from '@hono/node-server/serve-static';
 
 const app = new Hono();
+app.use('/*', serveStatic({ root: './public' }));
  
 // index.js
 // ... (import Hono, serve, dll)
@@ -108,6 +110,10 @@ app.get('api/todos', async (c) => {
         return c.json({ success: false, message: 'Unauthorized' }, 401);
     }
 });
+
+
+app.get('/', (c) => c.html('<h1>Tim Pengembang</h1><h2>Nama Kalian</h2>'));
+
  
 // ... (kode serve)
  
@@ -117,6 +123,6 @@ app.get('/', (c) => {
 
  
 // Jalankan Server
-const port = 3000;
+const port = 5000;
 console.log(` Server is running on http://localhost:${port}`);
 serve({ fetch: app.fetch, port });

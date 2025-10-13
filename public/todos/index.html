@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Todos</title>
+</head>
+ 
+<body>
+  <div>
+    <header>
+      <h1>Halo, <span id="username"></span>!</h1>
+      <a href="/logout/">Logout</a>
+    </header>
+ 
+    <main>
+      <h2>Todos Anda</h2>
+      <form id="addTodoForm">
+        <input type="text" id="noteInput" placeholder="Apa yang perlu dilakukan?" required />
+        <button type="submit">Tambah</button>
+      </form>
+      <ul id="todoList"></ul>
+    </main>
+  </div>
+ 
+  <script>
+    const usernameSpan = document.getElementById('username');
+    const addTodoForm = document.getElementById('addTodoForm');
+    const noteInput = document.getElementById('noteInput');
+    const todoList = document.getElementById('todoList');
+ 
+    // 1. Periksa status login & dapatkan data pengguna
+    (async () => {
+      try {
+        const response = await fetch('/api/me');
+        if (!response.ok) {
+          window.location.href = '/login/';
+          return;
+        }
+        const { success, data } = await response.json();
+        if (success) {
+          usernameSpan.textContent = data.username;
+          fetchTodos(); // Muat todos setelah user terverifikasi
+        } else {
+          window.location.href = '/login/';
+        }
+      } catch (error) {
+        window.location.href = '/login/';
+      }
+    })();
+ 
+    // 2. Fungsi untuk mengambil dan menampilkan todos
+    const fetchTodos = async () => {
+      try {
+        const response = await fetch('/api/todos'); // Endpoint GET
+        const { success, data } = await response.json();
+        if (success) {
+          todoList.innerHTML = ''; // Kosongkan daftar
+          data.forEach((todo) => {
+            const li = document.createElement('li');
+            li.textContent = todo.note;
+            todoList.appendChild(li);
+          });
+        }
+      } catch (error) {
+        console.error('Gagal mengambil todos:', error);
+      }
+    };
+ 
+    // 3. Event listener untuk menambah todo baru
+    addTodoForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const note = noteInput.value;
+      if (!note) return;
+ 
+      try {
+        const response = await fetch('/api/todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ note }),
+        });
+        const { success } = await response.json();
+        if (success) {
+          noteInput.value = '';
+          fetchTodos(); // Muat ulang daftar todos
+        }
+      } catch (error) {
+        console.error('Gagal menambah todo:', error);
+      }
+    });
+ 
+ 
+  </script>
+</body>
+ 
+</html>

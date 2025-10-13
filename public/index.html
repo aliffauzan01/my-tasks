@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF--8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loading...</title>
+  </head>
+  <body>
+    <h1>Memeriksa status login...</h1>
+ 
+    <script>
+      (async () => {
+        try {
+          const response = await fetch('/api/me');
+          if (response.ok) {
+            const { success } = await response.json();
+            if (success) {
+              window.location.href = '/todos/';
+            } else {
+              window.location.href = '/login/';
+            }
+          } else {
+            window.location.href = '/login/';
+          }
+        } catch (error) {
+          console.error('Error checking auth status:', error);
+          window.location.href = '/login/';
+        }
+      })();
+    </script>
+  </body>
+</html>
