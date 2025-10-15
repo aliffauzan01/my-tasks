@@ -10,4 +10,5 @@ export const todos = pgTable('todos', {
   id: serial('id').primaryKey(),
   note: text('note').notNull(),
   userId: integer('user_id').references(() => users.id).notNull(),
+  status: varchar('status', { length: 50}).default('pending').notNull(),
 });
