@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:generate": "drizzle-kit generate:pg",
-    "db:migrate": "node -r dotenv/config migrate.js",
+    "db:migrate": "drizzle-kit migrate" ,
     "db:seed": "node -r dotenv/config seed.js",
     "start": "node index.js"
   },

@@ -111,6 +111,21 @@ app.get('api/todos', async (c) => {
     }
 });
 
+// ... di dalam `const api = new Hono();`
+api.put('/todos/:id/status', async (c) => {
+    const user = c.get('user');
+    const id = parseInt(c.req.param('id'));
+    const { status } = await c.req.json(); // e.g., "completed"
+    
+    const updatedTodo = await db.update(schema.todos)
+        .set({ status })
+        .where(and(eq(schema.todos.id, id), eq(schema.todos.userId, user.id)))
+        .returning();
+    
+    if (updatedTodo.length === 0) return c.json({ success: false, message: 'Todo not found' }, 404);
+    return c.json({ success: true, data: updatedTodo[0] });
+});
+
 
 app.get('/', (c) => c.html('<h1>Tim Pengembang</h1><h2>Nama Kalian</h2>'));
 
