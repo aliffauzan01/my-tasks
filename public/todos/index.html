@@ -73,7 +73,7 @@
       e.preventDefault();
       const note = noteInput.value;
       if (!note) return;
- 
+      console.log(note)
       try {
         const response = await fetch('/api/todos', {
           method: 'POST',
