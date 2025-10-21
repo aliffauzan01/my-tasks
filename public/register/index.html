@@ -1,55 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Registrasi</title>
-  </head>
 
-  <body>
-    <div class="container">
-      <h1>Registrasi Akun Baru</h1>
-      <div id="message"></div>
-      <form id="registrationForm">
-        <input type="text" id="username" placeholder="Username" required />
-        <input type="password" id="password" placeholder="Password" required />
-        <button type="submit">Daftar</button>
-      </form>
-      <p>Sudah punya akun? <a href="/login/">Login di sini</a></p>
-    </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registrasi</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+    }
 
-    <script>
-      const form = document.getElementById("registrationForm");
-      const messageDiv = document.getElementById("message");
+    body {
+      background: linear-gradient(135deg, #4e54c8, #8f94fb);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
-        messageDiv.textContent = "";
-        messageDiv.style.color = "red";
+    .container {
+      background: white;
+      width: 350px;
+      padding: 30px 25px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      animation: fadeIn 0.6s ease;
+    }
 
-        try {
-          const response = await fetch("/api/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password }),
-          });
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
 
-          const result = await response.json();
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-          if (result.success) {
-            messageDiv.style.color = "green";
-            messageDiv.innerHTML =
-              'Registrasi berhasil! Silakan <a href="/login/">login</a>.';
-            form.reset();
-          } else {
-            messageDiv.textContent = result.message || "Registrasi gagal!";
-          }
-        } catch (error) {
-          messageDiv.textContent = "Terjadi kesalahan. Silakan coba lagi.";
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      border-color: #4e54c8;
+      outline: none;
+      box-shadow: 0 0 5px rgba(78, 84, 200, 0.3);
+    }
+
+    button {
+      width: 100%;
+      background: #4e54c8;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #3b40a4;
+    }
+
+    p {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    a {
+      color: #4e54c8;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    #message {
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Registrasi Akun Baru</h1>
+    <div id="message"></div>
+    <form id="registrationForm">
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Daftar</button>
+    </form>
+    <p>Sudah punya akun? <a href="/login/">Login di sini</a></p>
+  </div>
+
+  <script>
+    const form = document.getElementById("registrationForm");
+    const messageDiv = document.getElementById("message");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      messageDiv.textContent = "";
+      messageDiv.style.color = "red";
+
+      if (password.length < 4) {
+        messageDiv.textContent = "Password minimal 4 karakter.";
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          messageDiv.style.color = "green";
+          messageDiv.innerHTML =
+            'Registrasi berhasil! Silakan <a href="/login/">login</a>.';
+          form.reset();
+        } else {
+          messageDiv.textContent = result.message || "Registrasi gagal!";
         }
-      });
-    </script>
-  </body>
+      } catch (error) {
+        messageDiv.textContent = "Terjadi kesalahan. Silakan coba lagi.";
+      }
+    });
+  </script>
+</body>
+
 </html>

@@ -85,7 +85,7 @@ app.get("/api/me", (c) => {
 });
 
 // API Logout
-app.post("/logout", (c) => {
+app.post("/api/logout", (c) => {
   setCookie(c, "token", "", { maxAge: -1 });
   return c.json({ success: true, message: "Logout berhasil" });
 });
@@ -104,7 +104,8 @@ app.post('/api/todos', async (c) => {
         const newTodo = await db.insert(todos).values({ note, userId: user.id }).returning();
         return c.json({ success: true, data: newTodo[0] }, 201);
     } catch (error) {
-        return c.json({ success: false, message: 'Unauthorized2' + error + token}, 401);
+      console.log(error)
+        return c.json({ success: false, message: 'server error'}, 500);
     }
 });
 
@@ -125,20 +126,36 @@ app.get("/api/todos", async (c) => {
   }
 });
 
-// // ... di dalam `const api = new Hono();`
-// api.put('/todos/:id/status', async (c) => {
-//     const user = c.get('user');
-//     const id = parseInt(c.req.param('id'));
-//     const { status } = await c.req.json(); // e.g., "completed"
 
-//     const updatedTodo = await db.update(schema.todos)
-//         .set({ status })
-//         .where(and(eq(schema.todos.id, id), eq(schema.todos.userId, user.id)))
-//         .returning();
+// ... di dalam `const api = new Hono();`
+app.put('/todos/:id/status', async (c) => {
+    const user = c.get('user');
+    const id = parseInt(c.req.param('id'));
+    const { status } = await c.req.json(); // e.g., "completed"
 
-//     if (updatedTodo.length === 0) return c.json({ success: false, message: 'Todo not found' }, 404);
-//     return c.json({ success: true, data: updatedTodo[0] });
-// });
+    const updatedTodo = await db.update(schema.todos)
+        .set({ status })
+        .where(and(eq(schema.todos.id, id), eq(schema.todos.userId, user.id)))
+        .returning();
+
+    if (updatedTodo.length === 0) return c.json({ success: false, message: 'Todo not found' }, 404);
+    return c.json({ success: true, data: updatedTodo[0] });
+});
+
+import { and, eq } from "drizzle-orm";
+// ... di dalam `const api = new Hono();`
+app.delete('/api/todos/:id', async (c) => {
+
+    // ... ambil token kemudian peroleh user
+    const id = parseInt(c.req.param('id'));
+    
+    const deletedTodo = await db.delete(todos)
+        .where(and(eq(todos.id, id), eq(todos.userId, users.id)))
+        .returning();
+
+    if (deletedTodo.length === 0) return c.json({ success: false, message: 'Todo not found' }, 404);
+    return c.json({ success: true, message: 'Todo deleted' });
+});
 
 app.get("/", (c) => c.html("<h1>Tim Pengembang</h1><h2>Nama Kalian</h2>"));
 

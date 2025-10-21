@@ -5,6 +5,102 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login</title>
+  <style>
+    /* Reset dasar */
+    * {
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, #4e54c8, #8f94fb);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      width: 350px;
+      padding: 30px 25px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      border-color: #4e54c8;
+      outline: none;
+      box-shadow: 0 0 5px rgba(78, 84, 200, 0.3);
+    }
+
+    button {
+      width: 100%;
+      background: #4e54c8;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #3b40a4;
+    }
+
+    p {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    a {
+      color: #4e54c8;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    #message {
+      color: red;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+  </style>
 </head>
 
 <body>
@@ -44,7 +140,7 @@
           messageDiv.textContent = result.message || 'Login gagal!';
         }
       } catch (error) {
-        messageDiv.textContent = 'Terjadi kesalahan. Silakan coba lagi. '+ error;
+        messageDiv.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
       }
     });
   </script>

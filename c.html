@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Todo List</title>
+  <style>
+    body {
+      font-family: Poppins, sans-serif;
+      background: #f7f7ff;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      max-width: 400px;
+      margin: 20px auto;
+    }
+
+    li {
+      background: #fff;
+      margin-bottom: 10px;
+      padding: 10px 15px;
+      border-radius: 8px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: 0.3s;
+    }
+
+    li.completed {
+      text-decoration: line-through;
+      color: gray;
+      opacity: 0.7;
+    }
+
+    button {
+      background: #4e54c8;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #3b40a4;
+    }
+  </style>
+</head>
+<body>
+  <h1>Daftar Todo</h1>
+  <ul id="todoList">
+    <!-- Todo akan ditampilkan di sini -->
+  </ul>
+
+  <script>
+    // Simulasi data awal (biasanya ini dari server)
+    const todos = [
+      { id: 1, title: "Belajar JavaScript", status: "pending" },
+      { id: 2, title: "Membuat API Node.js", status: "pending" },
+      { id: 3, title: "Upload ke GitHub", status: "completed" }
+    ];
+
+    const todoList = document.getElementById("todoList");
+
+    // Fungsi untuk menampilkan semua todo
+    function renderTodos() {
+      todoList.innerHTML = "";
+
+      todos.forEach(todo => {
+        const li = document.createElement("li");
+        li.textContent = todo.title;
+
+        // Tambahkan class 'completed' jika statusnya sudah selesai
+        if (todo.status === "completed") {
+          li.classList.add("completed");
+        }
+
+        // Tambahkan tombol untuk ubah status
+        const btn = document.createElement("button");
+        btn.textContent = todo.status === "completed" ? "Selesai ✅" : "Tandai Selesai";
+        btn.disabled = todo.status === "completed"; // tombol nonaktif jika sudah selesai
+
+        // Event klik tombol
+        btn.addEventListener("click", async () => {
+          try {
+            const response = await fetch(`/api/todos/${todo.id}/status`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ status: "completed" })
+            });
+
+            if (response.ok) {
+              // Update status di array lokal
+              todo.status = "completed";
+              // Perbarui tampilan
+              renderTodos();
+            } else {
+              alert("Gagal memperbarui status!");
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Terjadi kesalahan koneksi!");
+          }
+        });
+
+        li.appendChild(btn);
+        todoList.appendChild(li);
+      });
+    }
+
+    // Panggil render pertama kali
+    renderTodos();
+  </script>
+</body>
+</html>

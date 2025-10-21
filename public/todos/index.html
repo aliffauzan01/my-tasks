@@ -1,21 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
- 
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Todos</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #4e54c8, #8f94fb);
+      min-height: 100vh;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 20px;
+    }
+
+    .container {
+      background: white;
+      width: 100%;
+      max-width: 450px;
+      padding: 25px 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    header h1 {
+      font-size: 20px;
+      color: #4e54c8;
+    }
+
+    header a {
+      text-decoration: none;
+      background: #4e54c8;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+
+    header a:hover {
+      background: #3b40a4;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #4e54c8;
+      box-shadow: 0 0 5px rgba(78, 84, 200, 0.3);
+      outline: none;
+    }
+
+    button {
+      background: #4e54c8;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #3b40a4;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: #f8f8ff;
+      margin-bottom: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 4px solid #4e54c8;
+      animation: fadeIn 0.4s ease;
+    }
+
+    li span {
+      flex: 1;
+      margin-left: 10px;
+      transition: 0.3s;
+    }
+
+    .completed span {
+      text-decoration: line-through;
+      color: #888;
+    }
+
+    .delete-btn {
+      background: #ff5c5c;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: 0.3s;
+    }
+
+    .delete-btn:hover {
+      background: #d94a4a;
+    }
+
+    .checkbox {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: #4e54c8;
+    }
+  </style>
 </head>
- 
+
 <body>
-  <div>
+  <div class="container">
     <header>
-      <h1>Halo, <span id="username"></span>!</h1>
+      <h1>Halo, <span id="username"></span> 👋</h1>
       <a href="/logout/">Logout</a>
     </header>
- 
+
     <main>
-      <h2>Todos Anda</h2>
+      <h2>Daftar Kegiatan</h2>
       <form id="addTodoForm">
         <input type="text" id="noteInput" placeholder="Apa yang perlu dilakukan?" required />
         <button type="submit">Tambah</button>
@@ -23,13 +181,13 @@
       <ul id="todoList"></ul>
     </main>
   </div>
- 
+
   <script>
     const usernameSpan = document.getElementById('username');
     const addTodoForm = document.getElementById('addTodoForm');
     const noteInput = document.getElementById('noteInput');
     const todoList = document.getElementById('todoList');
- 
+
     // 1. Periksa status login & dapatkan data pengguna
     (async () => {
       try {
@@ -49,17 +207,49 @@
         window.location.href = '/login/';
       }
     })();
- 
+
     // 2. Fungsi untuk mengambil dan menampilkan todos
     const fetchTodos = async () => {
       try {
-        const response = await fetch('/api/todos'); // Endpoint GET
+        const response = await fetch('/api/todos');
         const { success, data } = await response.json();
         if (success) {
-          todoList.innerHTML = ''; // Kosongkan daftar
+          todoList.innerHTML = '';
           data.forEach((todo) => {
             const li = document.createElement('li');
-            li.textContent = todo.note;
+            if (todo.status === 'completed') li.classList.add('completed');
+
+            // Checkbox untuk menandai selesai
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'checkbox';
+            checkbox.checked = todo.status === 'completed';
+            checkbox.onchange = async () => {
+              const newStatus = checkbox.checked ? 'completed' : 'pending';
+              await fetch(`/api/todos/${todo.id}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus }),
+              });
+              li.classList.toggle('completed', checkbox.checked);
+            };
+
+            // Teks todo
+            const span = document.createElement('span');
+            span.textContent = todo.note;
+
+            // Tombol hapus
+            const delBtn = document.createElement('button');
+            delBtn.textContent = 'Hapus';
+            delBtn.className = 'delete-btn';
+            delBtn.onclick = async () => {
+              await fetch(`/api/todos/${todo.id}`, { method: 'DELETE' });
+              fetchTodos();
+            };
+
+            li.appendChild(checkbox);
+            li.appendChild(span);
+            li.appendChild(delBtn);
             todoList.appendChild(li);
           });
         }
@@ -67,13 +257,13 @@
         console.error('Gagal mengambil todos:', error);
       }
     };
- 
+
     // 3. Event listener untuk menambah todo baru
     addTodoForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const note = noteInput.value;
+      const note = noteInput.value.trim();
       if (!note) return;
-      console.log(note)
+
       try {
         const response = await fetch('/api/todos', {
           method: 'POST',
@@ -83,15 +273,13 @@
         const { success } = await response.json();
         if (success) {
           noteInput.value = '';
-          fetchTodos(); // Muat ulang daftar todos
+          fetchTodos();
         }
       } catch (error) {
         console.error('Gagal menambah todo:', error);
       }
     });
- 
- 
   </script>
 </body>
- 
+
 </html>
