@@ -127,7 +127,7 @@ app.get("/api/todos", async (c) => {
 });
 
 
-// ... di dalam `const api = new Hono();`
+// ... di dalam `const app = new Hono();`
 app.put('/todos/:id/status', async (c) => {
     const user = c.get('user');
     const id = parseInt(c.req.param('id'));
@@ -143,27 +143,28 @@ app.put('/todos/:id/status', async (c) => {
 });
 
 import { and, eq } from "drizzle-orm";
-// ... di dalam `const api = new Hono();`
+// ... di dalam `const app = new Hono();`
 app.delete('/api/todos/:id', async (c) => {
 
     // ... ambil token kemudian peroleh user
     const id = parseInt(c.req.param('id'));
     
     const deletedTodo = await db.delete(todos)
-        .where(and(eq(todos.id, id), eq(todos.userId, users.id)))
+        .where(eq(todos.id, id))
         .returning();
 
-    if (deletedTodo.length === 0) return c.json({ success: false, message: 'Todo not found' }, 404);
+    if (deletedTodo.length === 0) return c.json({ success: false, message: 'data is not exist' }, 404);
+    console.log(deletedTodo[1])
     return c.json({ success: true, message: 'Todo deleted' });
 });
 
-app.get("/", (c) => c.html("<h1>Tim Pengembang</h1><h2>Nama Kalian</h2>"));
+// app.get("/", (c) => c.html("<h1>Tim Pengembang</h1><h2>Nama Kalian</h2>"));
 
-// ... (kode serve)
+// // ... (kode serve)
 
-app.get("/", (c) => {
-  return c.html("<h1>Tim Pengembang</h1><h2>Nama Kalian</h2>");
-});
+// app.get("/", (c) => {
+//   return c.html("<h1>Tim Pengembang</h1><h2>Nama Kalian</h2>");
+// });
 
 // Jalankan Server
 const port = 5000;

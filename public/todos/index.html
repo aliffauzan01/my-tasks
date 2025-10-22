@@ -168,7 +168,7 @@
 <body>
   <div class="container">
     <header>
-      <h1>Halo, <span id="username"></span> 👋</h1>
+      <h1>Halo, <span id="username"></span></h1>
       <a href="/logout/">Logout</a>
     </header>
 
@@ -243,6 +243,7 @@
             delBtn.textContent = 'Hapus';
             delBtn.className = 'delete-btn';
             delBtn.onclick = async () => {
+              console.log(todo.id)
               await fetch(`/api/todos/${todo.id}`, { method: 'DELETE' });
               fetchTodos();
             };
