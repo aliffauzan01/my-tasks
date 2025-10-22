@@ -128,17 +128,19 @@ app.get("/api/todos", async (c) => {
 
 
 // ... di dalam `const app = new Hono();`
-app.put('/todos/:id/status', async (c) => {
-    const user = c.get('user');
+app.put('/api/todos/:id/status', async (c) => {
+  const token = getCookie(c, "token");
+  if (!token) return c.json({ success: false, message: "Unauthorized2" + token }, 401);
+    const user =  jwt.verify(token, process.env.JWT_SECRET);
     const id = parseInt(c.req.param('id'));
     const { status } = await c.req.json(); // e.g., "completed"
 
-    const updatedTodo = await db.update(schema.todos)
+    const updatedTodo = await db.update(todos)
         .set({ status })
-        .where(and(eq(schema.todos.id, id), eq(schema.todos.userId, user.id)))
+        .where(and(eq(todos.id, id), eq(todos.userId, user.id)))
         .returning();
 
-    if (updatedTodo.length === 0) return c.json({ success: false, message: 'Todo not found' }, 404);
+    if (updatedTodo.length === 0) return c.json({ success: false, message: user }, 404);
     return c.json({ success: true, data: updatedTodo[0] });
 });
 
